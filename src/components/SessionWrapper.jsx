@@ -1,10 +1,14 @@
 "use client";
 
 import {SessionProvider} from 'next-auth/react'
-
+import  {RecoilRoot, recoil} from 'recoil'
 const SessionWrapper = ({children}) => {
     return (
-        <SessionProvider>{children}</SessionProvider>
+        <SessionProvider>
+            <RecoilRoot>
+                {children}
+            </RecoilRoot>
+        </SessionProvider>
     )
 }
 

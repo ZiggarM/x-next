@@ -6,7 +6,7 @@ import { signIn, useSession } from "next-auth/react"
 import { setDoc, doc, getFirestore, serverTimestamp, onSnapshot, collection, deleteDoc } from "firebase/firestore";
 import {app} from "../firebase"
 import { useEffect, useState } from "react";
-export default function Icons({id}) {
+export default function Icons({id, uid}) {
     const {data: session} = useSession();
     const [isLiked, setIsLiked] = useState(false);
     const [likes, setLikes] = useState([]);
@@ -33,6 +33,21 @@ export default function Icons({id}) {
 
     useEffect(() => {
         setIsLiked(likes.findIndex((like) => like.id === session?.user.uid) !== -1)}, [likes])
+
+    const deletePost = async () => {
+        if(window.confirm("Are you sure you want to delete this post?")){
+            if(session?.user?.uid === uid){
+                deleteDoc(doc(db, 'posts', id)).then(() => {
+                    console.log("post deleted");
+                    window.location.reload();
+                }).catch((error) => {
+                    console.error('Error deleting document: ', error);
+                })
+            } else {
+                alert("You can only delete your own posts");
+            }
+        }
+    }
   return (
     <div className="flex justify-start gap-5 p-2 text-gray-500">
         <HiOutlineChat className="w-8 h-8 cursor-pointer rounded-full transition duration-500 ease-in-out p-2 hover:text-sky-500 hover:bg-sky-100" />
@@ -46,8 +61,12 @@ export default function Icons({id}) {
         className="w-8 h-8 cursor-pointer rounded-full transition duration-500 ease-in-out p-2 hover:text-red-500 hover:bg-red-100" />)}
         {likes.length > 0 && <span className={`text-xs ${isLiked && "text-red-600"}`}>{likes.length}</span>}
         </div>
-        
-        <HiOutlineTrash className="w-8 h-8 cursor-pointer rounded-full transition duration-500 ease-in-out p-2 hover:text-green-500 hover:bg-green-100" />
+        {session?.user?.uid === uid && (
+            <HiOutlineTrash
+            onClick={deletePost}
+            className="w-8 h-8 cursor-pointer rounded-full transition duration-500 ease-in-out p-2 hover:text-green-500 hover:bg-green-100" />
+        )
+        }
     </div>
   )
 }

@@ -5,10 +5,11 @@ import {useRecoilState} from 'recoil';
 import {modalState, postIdState} from '../atom/modelAtom'
 import Modal from 'react-modal'
 import {HiX} from 'react-icons/hi'
-import { doc, getFirestore, onSnapshot } from 'firebase/firestore';
+import { addDoc, collection, doc, getFirestore, onSnapshot, serverTimestamp } from 'firebase/firestore';
 const {useSession} = require('next-auth/react')
 import {app} from "../firebase"
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function CommentModel() {
     const [open, setOpen] = useRecoilState(modalState)
@@ -18,6 +19,7 @@ export default function CommentModel() {
     const {data: session} = useSession()
 
     const db = getFirestore(app)
+    const router = useRouter()
 
   useEffect(() => {
     if (postId !== '') {
@@ -34,6 +36,17 @@ export default function CommentModel() {
     }, [postId])
 
     const sendComment = async () => {
+      addDoc(collection(db, 'posts', postId, 'comments'), {
+        name: session.user.name,
+        username: session.user.username,
+        userImg: session.user.image,
+        comment: input,
+        timestamp: serverTimestamp()
+      }).then(()=> {
+        setInput("")
+        setOpen(false);
+        router.push('/posts/${postId}')
+      }).catch((err) => console.log(err))
     }
 
   return (

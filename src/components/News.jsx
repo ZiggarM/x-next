@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 export default function News() {
   const [news, setNews] = useState([]);
-  const [articlesNum, setArticlesNum] = useState([3]);
+  const [articlesNum, setArticlesNum] = useState(3);
   useEffect(() => {
     fetch("https://saurav.tech/NewsAPI/top-headlines/category/business/us.json").then((res) => res.json()).then((data) => {
     setNews(data.articles);
@@ -28,7 +28,7 @@ export default function News() {
         </a>
       </div>
     ))}
-  <button onClick={() => setArticlesNum(articlesNum + 1)} className="text-blue-300 pl-4 pb-3 hover:text-blue-400 text-sm">Load more</button>
+  <button onClick={() => setArticlesNum(articlesNum + 3)} className="text-blue-300 pl-4 pb-3 hover:text-blue-400 text-sm">Load more</button>
   </div>
   )
 }

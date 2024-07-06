@@ -45,7 +45,7 @@ export default function CommentModel() {
       }).then(()=> {
         setInput("")
         setOpen(false);
-        router.push('/posts/${postId}')
+        router.push(`/posts/${postId}`)
       }).catch((err) => console.log(err))
     }
 
